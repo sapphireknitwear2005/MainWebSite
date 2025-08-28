@@ -1,0 +1,12 @@
+{
+  "lastUpdated": "2025-08-27T18:38:28.095303Z",
+  "lines": 10,
+  "currentUtilizationPercent": 72,
+  "availableLines": 3,
+  "monthlyCapacityPcs": 500000,
+  "leadTimes": {
+    "sampleDays": "3-4",
+    "ppSampleDays": "7-10",
+    "bulkDays": "60-75"
+  }
+}
