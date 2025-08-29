@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { motion } from "framer-motion";
 import {
   garmentStyles,
   fabrics,
@@ -11,6 +12,16 @@ import {
   urgency,
 } from "../data/estimatorData";
 import { calculateEstimate } from "../data/estimatorLogic";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
 export default function EstimatorPro() {
   const [inputs, setInputs] = useState({
@@ -27,9 +38,9 @@ export default function EstimatorPro() {
 
   const [result, setResult] = useState(null);
 
-  const handleChange = (e, options) => {
-    const selected = options.find((o) => o.value === e.target.value);
-    setInputs({ ...inputs, [e.target.name]: selected });
+  const handleSelectChange = (value, options, key) => {
+    const selected = options.find((o) => o.value === value);
+    setInputs({ ...inputs, [key]: selected });
   };
 
   const handleQtyChange = (e) => {
@@ -41,154 +52,194 @@ export default function EstimatorPro() {
   };
 
   return (
-    <div className="space-y-4 p-6 border rounded-xl shadow bg-white">
-      <h2 className="text-xl font-bold">Configure Your Order</h2>
+    <motion.div
+      className="space-y-6"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+    >
+      <Card className="p-6 shadow-xl border rounded-2xl bg-gradient-to-br from-white to-gray-50">
+        <h2 className="text-2xl font-semibold mb-6">⚡ Configure Your Order</h2>
 
-      <div className="grid md:grid-cols-2 gap-4">
-        {/* Garment */}
-        <select
-          name="garment"
-          onChange={(e) => handleChange(e, garmentStyles)}
-          className="p-2 border rounded"
-        >
-          {garmentStyles.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
+        <div className="grid md:grid-cols-2 gap-4">
+          {/* Garment */}
+          <Select
+            onValueChange={(v) =>
+              handleSelectChange(v, garmentStyles, "garment")
+            }
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Garment Style" />
+            </SelectTrigger>
+            <SelectContent>
+              {garmentStyles.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        {/* Fabric */}
-        <select
-          name="fabric"
-          onChange={(e) => handleChange(e, fabrics)}
-          className="p-2 border rounded"
-        >
-          {fabrics.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
+          {/* Fabric */}
+          <Select
+            onValueChange={(v) => handleSelectChange(v, fabrics, "fabric")}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Fabric" />
+            </SelectTrigger>
+            <SelectContent>
+              {fabrics.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        {/* Color */}
-        <select
-          name="color"
-          onChange={(e) => handleChange(e, colors)}
-          className="p-2 border rounded"
-        >
-          {colors.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
+          {/* Color */}
+          <Select onValueChange={(v) => handleSelectChange(v, colors, "color")}>
+            <SelectTrigger>
+              <SelectValue placeholder="Color" />
+            </SelectTrigger>
+            <SelectContent>
+              {colors.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        {/* Printing */}
-        <select
-          name="print"
-          onChange={(e) => handleChange(e, printing)}
-          className="p-2 border rounded"
-        >
-          {printing.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
+          {/* Printing */}
+          <Select
+            onValueChange={(v) => handleSelectChange(v, printing, "print")}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Printing" />
+            </SelectTrigger>
+            <SelectContent>
+              {printing.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        {/* Embroidery */}
-        <select
-          name="embroidery"
-          onChange={(e) => handleChange(e, embroidery)}
-          className="p-2 border rounded"
-        >
-          {embroidery.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
+          {/* Embroidery */}
+          <Select
+            onValueChange={(v) =>
+              handleSelectChange(v, embroidery, "embroidery")
+            }
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Embroidery" />
+            </SelectTrigger>
+            <SelectContent>
+              {embroidery.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        {/* Trims */}
-        <select
-          name="trim"
-          onChange={(e) => handleChange(e, trims)}
-          className="p-2 border rounded"
-        >
-          {trims.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
+          {/* Trims */}
+          <Select onValueChange={(v) => handleSelectChange(v, trims, "trim")}>
+            <SelectTrigger>
+              <SelectValue placeholder="Trims" />
+            </SelectTrigger>
+            <SelectContent>
+              {trims.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        {/* Compliance */}
-        <select
-          name="compliance"
-          onChange={(e) => handleChange(e, compliance)}
-          className="p-2 border rounded"
-        >
-          {compliance.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
+          {/* Compliance */}
+          <Select
+            onValueChange={(v) =>
+              handleSelectChange(v, compliance, "compliance")
+            }
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Compliance" />
+            </SelectTrigger>
+            <SelectContent>
+              {compliance.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        {/* Urgency */}
-        <select
-          name="urgency"
-          onChange={(e) => handleChange(e, urgency)}
-          className="p-2 border rounded"
-        >
-          {urgency.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
+          {/* Urgency */}
+          <Select
+            onValueChange={(v) => handleSelectChange(v, urgency, "urgency")}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Urgency" />
+            </SelectTrigger>
+            <SelectContent>
+              {urgency.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        {/* Quantity */}
-        <input
-          type="number"
-          name="qty"
-          value={inputs.qty}
-          onChange={handleQtyChange}
-          className="p-2 border rounded"
-          placeholder="Order Quantity"
-        />
-      </div>
+          {/* Quantity */}
+          <Input
+            type="number"
+            value={inputs.qty}
+            onChange={handleQtyChange}
+            placeholder="Order Quantity"
+          />
+        </div>
 
-      <button
-        onClick={calculate}
-        className="px-4 py-2 bg-blue-600 text-white rounded"
-      >
-        Estimate
-      </button>
+        <div className="flex justify-end mt-6">
+          <Button
+            onClick={calculate}
+            className="px-6 py-2 text-lg shadow-lg rounded-xl"
+          >
+            🚀 Estimate Now
+          </Button>
+        </div>
+      </Card>
 
       {result && (
-        <div className="p-4 mt-4 border rounded bg-gray-50">
-          {result.error ? (
-            <p className="text-red-600">{result.error}</p>
-          ) : (
-            <>
-              <p>
-                <strong>MOQ:</strong> {result.moq} pcs
-              </p>
-              <p>
-                <strong>Lead Time:</strong> {result.lead} days
-              </p>
-              <p>
-                <strong>Cost per Unit:</strong> ${result.cost}
-              </p>
-              <p>
-                <strong>Total Cost:</strong> ${result.totalCost}
-              </p>
-            </>
-          )}
-        </div>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
+          <Card className="p-6 border shadow-lg rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-100">
+            <h3 className="text-xl font-semibold mb-4">📊 Your Estimate</h3>
+            {result.error ? (
+              <p className="text-red-600">{result.error}</p>
+            ) : (
+              <CardContent className="space-y-2 text-gray-800">
+                <p>
+                  <strong>MOQ:</strong> {result.moq} pcs
+                </p>
+                <p>
+                  <strong>Lead Time:</strong> {result.lead} days
+                </p>
+                <p>
+                  <strong>Cost per Unit:</strong> ${result.cost}
+                </p>
+                <p>
+                  <strong>Total Cost:</strong> ${result.totalCost}
+                </p>
+              </CardContent>
+            )}
+          </Card>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }
