@@ -2,36 +2,135 @@
 import { useState } from "react";
 
 export default function RFQForm() {
-  const [status, setStatus] = useState(null);
-  async function submit(e) {
+  const [form, setForm] = useState({
+    category: "",
+    quantity: "",
+    price: "",
+    fabric: "",
+    details: "",
+    contact: "",
+    files: [],
+  });
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+  };
+
+  const handleFileChange = (e) => {
+    setForm({ ...form, files: Array.from(e.target.files) });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const form = new FormData(e.currentTarget);
-    const payload = Object.fromEntries(form.entries());
-    setStatus("Submitting…");
-    const res = await fetch('/api/lead', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-    if (res.ok) setStatus("Thank you — we’ll reply within 24 hours.");
-    else setStatus("Something went wrong. Please email sales@sapphire-knitwear.com");
-  }
+    setLoading(true);
+
+    const formData = new FormData();
+    Object.entries(form).forEach(([key, value]) => {
+      if (key === "files") {
+        value.forEach((file) => formData.append("files", file));
+      } else {
+        formData.append(key, value);
+      }
+    });
+
+    const res = await fetch("/api/rfq", {
+      method: "POST",
+      body: formData,
+    });
+
+    setLoading(false);
+    if (res.ok) {
+      setSuccess(true);
+      setForm({
+        category: "",
+        quantity: "",
+        price: "",
+        fabric: "",
+        details: "",
+        contact: "",
+        files: [],
+      });
+    }
+  };
+
   return (
-    <form className="card space-y-4" onSubmit={submit}>
-      <div className="grid md:grid-cols-2 gap-4">
-        <label className="block text-sm">Name<input required name="name" className="mt-1 w-full border rounded-xl p-2" /></label>
-        <label className="block text-sm">Email<input required type="email" name="email" className="mt-1 w-full border rounded-xl p-2" /></label>
-        <label className="block text-sm">Company<input name="company" className="mt-1 w-full border rounded-xl p-2" /></label>
-        <label className="block text-sm">Country<input name="country" className="mt-1 w-full border rounded-xl p-2" /></label>
-        <label className="block text-sm">Category<select name="category" className="mt-1 w-full border rounded-xl p-2">
-          <option>Knitwear</option><option>Woven</option><option>Jackets</option><option>Others</option>
-        </select></label>
-        <label className="block text-sm">Quantity (pcs)<input name="quantity" type="number" className="mt-1 w-full border rounded-xl p-2" /></label>
-        <label className="block text-sm">Target Price (FOB USD)<input name="targetPrice" className="mt-1 w-full border rounded-xl p-2" /></label>
-      </div>
-      <label className="block text-sm">Notes<textarea name="notes" rows={4} className="mt-1 w-full border rounded-xl p-2"></textarea></label>
-      <div className="flex items-center gap-2 text-sm">
-        <input id="terms" type="checkbox" required className="h-4 w-4" />
-        <label htmlFor="terms">I agree to the <a href="/privacy">privacy policy</a>.</label>
-      </div>
-      <button className="btn" type="submit">Send RFQ</button>
-      {status && <p className="text-sm text-gray-600" role="status">{status}</p>}
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-4 bg-white p-6 shadow-lg rounded-2xl border"
+    >
+      <input
+        name="category"
+        placeholder="Garment Category (e.g. Jackets)"
+        value={form.category}
+        onChange={handleChange}
+        className="w-full p-2 border rounded"
+        required
+      />
+      <input
+        name="quantity"
+        placeholder="Quantity (e.g. 10,000 pcs)"
+        value={form.quantity}
+        onChange={handleChange}
+        className="w-full p-2 border rounded"
+        required
+      />
+      <input
+        name="price"
+        placeholder="Target Price (USD)"
+        value={form.price}
+        onChange={handleChange}
+        className="w-full p-2 border rounded"
+      />
+      <input
+        name="fabric"
+        placeholder="Preferred Fabric"
+        value={form.fabric}
+        onChange={handleChange}
+        className="w-full p-2 border rounded"
+      />
+      <textarea
+        name="details"
+        placeholder="Additional Details"
+        value={form.details}
+        onChange={handleChange}
+        className="w-full p-2 border rounded"
+        rows="4"
+      />
+      <input
+        name="contact"
+        type="email"
+        placeholder="Your Email"
+        value={form.contact}
+        onChange={handleChange}
+        className="w-full p-2 border rounded"
+        required
+      />
+
+      {/* File Upload */}
+      <input
+        type="file"
+        multiple
+        onChange={handleFileChange}
+        className="w-full p-2 border rounded"
+        accept=".png,.jpg,.jpeg,.pdf"
+      />
+
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition"
+      >
+        {loading ? "Sending..." : "Submit RFQ"}
+      </button>
+
+      {success && (
+        <p className="text-green-600 font-medium mt-2">
+          ✅ RFQ submitted successfully! We'll contact you soon.
+        </p>
+      )}
     </form>
   );
 }
