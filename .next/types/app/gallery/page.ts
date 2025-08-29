@@ -1,4 +1,4 @@
-// File: C:\Users\The DT\Desktop\RMG\lmao\phase 2\sapphire_site\site\app\gallery\page.js
+// File: C:\Users\The DT\Desktop\RMG\lmao\phase 2\MainWebSite\app\gallery\page.js
 import * as entry from '../../../../app/gallery/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
