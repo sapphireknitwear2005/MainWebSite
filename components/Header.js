@@ -1,4 +1,5 @@
 import Link from "next/link";
+
 export default function Header() {
   return (
     <header className="sticky top-0 z-50 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-b">
@@ -6,6 +7,7 @@ export default function Header() {
         Skip to content
       </a>
       <div className="container flex items-center justify-between h-16">
+        {/* Logo + Brand */}
         <Link href="/" className="flex items-center gap-3 no-underline">
           <img
             src="/logos/logo.png"
@@ -16,7 +18,10 @@ export default function Header() {
             Sapphire Design LTD
           </span>
         </Link>
+
+        {/* Navigation */}
         <nav className="hidden md:flex gap-6 text-sm" aria-label="Main">
+          <Link href="/">Home</Link>
           <Link href="/about">About</Link>
           <Link href="/products">Products</Link>
           <Link href="/capabilities">Capabilities</Link>
@@ -29,6 +34,8 @@ export default function Header() {
           <Link href="/gallery">Pictures</Link>
           <Link href="/contact">Contact</Link>
         </nav>
+
+        {/* Actions */}
         <div className="flex items-center gap-3">
           <a
             href="https://wa.me/"

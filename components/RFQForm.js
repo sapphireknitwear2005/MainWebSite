@@ -2,133 +2,185 @@
 import { useState } from "react";
 
 export default function RFQForm() {
-  const [form, setForm] = useState({
-    category: "",
-    quantity: "",
-    price: "",
+  const [formData, setFormData] = useState({
+    buyerName: "",
+    company: "",
+    email: "",
+    style: "",
     fabric: "",
-    details: "",
-    contact: "",
-    files: [],
+    trims: "",
+    quantity: "",
+    targetPrice: "",
+    incoterm: "FOB",
+    deadline: "",
+    notes: "",
   });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(false);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
-  };
-
-  const handleFileChange = (e) => {
-    setForm({ ...form, files: Array.from(e.target.files) });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setSuccess(false);
+    setError(false);
 
-    const formData = new FormData();
-    Object.entries(form).forEach(([key, value]) => {
-      if (key === "files") {
-        value.forEach((file) => formData.append("files", file));
-      } else {
-        formData.append(key, value);
-      }
-    });
-
-    const res = await fetch("/api/rfq", {
-      method: "POST",
-      body: formData,
-    });
-
-    setLoading(false);
-    if (res.ok) {
-      setSuccess(true);
-      setForm({
-        category: "",
-        quantity: "",
-        price: "",
-        fabric: "",
-        details: "",
-        contact: "",
-        files: [],
+    try {
+      const res = await fetch("/api/send-rfq", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
       });
+
+      if (res.ok) {
+        setSuccess(true);
+        setFormData({
+          buyerName: "",
+          company: "",
+          email: "",
+          style: "",
+          fabric: "",
+          trims: "",
+          quantity: "",
+          targetPrice: "",
+          incoterm: "FOB",
+          deadline: "",
+          notes: "",
+        });
+      } else {
+        setError(true);
+      }
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-4 bg-white p-6 shadow-lg rounded-2xl border"
+      className="space-y-4 p-6 bg-white rounded-2xl shadow-xl border"
     >
-      <input
-        name="category"
-        placeholder="Garment Category (e.g. Jackets)"
-        value={form.category}
-        onChange={handleChange}
-        className="w-full p-2 border rounded"
-        required
-      />
-      <input
-        name="quantity"
-        placeholder="Quantity (e.g. 10,000 pcs)"
-        value={form.quantity}
-        onChange={handleChange}
-        className="w-full p-2 border rounded"
-        required
-      />
-      <input
-        name="price"
-        placeholder="Target Price (USD)"
-        value={form.price}
-        onChange={handleChange}
-        className="w-full p-2 border rounded"
-      />
-      <input
-        name="fabric"
-        placeholder="Preferred Fabric"
-        value={form.fabric}
-        onChange={handleChange}
-        className="w-full p-2 border rounded"
-      />
-      <textarea
-        name="details"
-        placeholder="Additional Details"
-        value={form.details}
-        onChange={handleChange}
-        className="w-full p-2 border rounded"
-        rows="4"
-      />
-      <input
-        name="contact"
-        type="email"
-        placeholder="Your Email"
-        value={form.contact}
-        onChange={handleChange}
-        className="w-full p-2 border rounded"
-        required
-      />
+      <h2 className="text-xl font-semibold">Request for Quote</h2>
 
-      {/* File Upload */}
-      <input
-        type="file"
-        multiple
-        onChange={handleFileChange}
-        className="w-full p-2 border rounded"
-        accept=".png,.jpg,.jpeg,.pdf"
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <input
+          type="text"
+          name="buyerName"
+          value={formData.buyerName}
+          onChange={handleChange}
+          placeholder="Your Name *"
+          className="border p-3 rounded-lg w-full"
+          required
+        />
+        <input
+          type="text"
+          name="company"
+          value={formData.company}
+          onChange={handleChange}
+          placeholder="Company Name"
+          className="border p-3 rounded-lg w-full"
+        />
+        <input
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          placeholder="Email *"
+          className="border p-3 rounded-lg w-full"
+          required
+        />
+        <input
+          type="text"
+          name="style"
+          value={formData.style}
+          onChange={handleChange}
+          placeholder="Style / Product Type *"
+          className="border p-3 rounded-lg w-full"
+          required
+        />
+        <input
+          type="text"
+          name="fabric"
+          value={formData.fabric}
+          onChange={handleChange}
+          placeholder="Fabric Type (e.g. 100% Cotton)"
+          className="border p-3 rounded-lg w-full"
+        />
+        <input
+          type="text"
+          name="trims"
+          value={formData.trims}
+          onChange={handleChange}
+          placeholder="Trims / Accessories"
+          className="border p-3 rounded-lg w-full"
+        />
+        <input
+          type="number"
+          name="quantity"
+          value={formData.quantity}
+          onChange={handleChange}
+          placeholder="Order Quantity *"
+          className="border p-3 rounded-lg w-full"
+          required
+        />
+        <input
+          type="text"
+          name="targetPrice"
+          value={formData.targetPrice}
+          onChange={handleChange}
+          placeholder="Target Price (per unit)"
+          className="border p-3 rounded-lg w-full"
+        />
+        <select
+          name="incoterm"
+          value={formData.incoterm}
+          onChange={handleChange}
+          className="border p-3 rounded-lg w-full"
+        >
+          <option value="FOB">FOB</option>
+          <option value="CIF">CIF</option>
+          <option value="DDP">DDP</option>
+        </select>
+        <input
+          type="date"
+          name="deadline"
+          value={formData.deadline}
+          onChange={handleChange}
+          className="border p-3 rounded-lg w-full"
+        />
+      </div>
+
+      <textarea
+        name="notes"
+        value={formData.notes}
+        onChange={handleChange}
+        placeholder="Additional Notes..."
+        className="border p-3 rounded-lg w-full"
+        rows={4}
       />
 
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition"
+        className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition w-full"
       >
         {loading ? "Sending..." : "Submit RFQ"}
       </button>
 
       {success && (
-        <p className="text-green-600 font-medium mt-2">
-          ✅ RFQ submitted successfully! We'll contact you soon.
+        <p className="text-green-600 mt-3">
+          ✅ Your RFQ has been sent successfully!
+        </p>
+      )}
+      {error && (
+        <p className="text-red-600 mt-3">
+          ❌ Something went wrong. Please try again.
         </p>
       )}
     </form>
